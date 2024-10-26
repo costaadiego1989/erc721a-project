@@ -231,7 +231,6 @@ describe("TheSeed", function () {
         .equal(otherAccount);
     });
 
-    
     it("Should emit approval event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
@@ -246,6 +245,51 @@ describe("TheSeed", function () {
         .emit(seed, "Approval")
         .withArgs(owner.address, otherAccount.address, tokenId);
     });
+
+    it("Should clear approvals)", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      await seed.approve(otherAccount.address, tokenId);
+      await seed.transferFrom(owner.address, otherAccount.address, tokenId);
+
+      const approved = await seed.getApproved(tokenId);
+
+      expect(approved)
+        .to
+        .equal("0x0000000000000000000000000000000000000000");
+    });
+
+    it("Should transfer approved for all)", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      await seed.setApprovalForAll(otherAccount.address, true);
+      const approved = await seed.isApprovedForAll(owner.address, otherAccount.address);
+
+      const instance = seed.connect(otherAccount);
+      await instance.transferFrom(owner.address, otherAccount.address, tokenId);
+
+      const balance = await seed.balanceOf(otherAccount.address);
+      const ownerOf = await seed.ownerOf(tokenId);
+
+      expect(balance)
+        .to
+        .equal(1);
+
+      expect(approved)
+        .to
+        .equal(true);
+
+      expect(ownerOf)
+        .to
+        .equal(otherAccount.address);
+    });
+
 
   });
 });
