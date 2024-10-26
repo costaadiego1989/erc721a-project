@@ -164,5 +164,14 @@ describe("TheSeed", function () {
       expect(ownerOf).to.equal(otherAccount.address);
     });
 
+    it("Should emit transfer", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      expect(await seed.transferFrom(owner.address, otherAccount.address, tokenId)).to.emit(seed, "Transfer").withArgs(owner.address, otherAccount.address, tokenId);
+    });
+
   });
 });
