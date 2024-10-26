@@ -50,5 +50,20 @@ describe("TheSeed", function () {
       expect(totalSupply).to.equal(1);
     });
 
+    it("Should burn", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      await seed.burn(tokenId);
+      const balance = await seed.balanceOf(owner.address);
+      const totalSupply = await seed.totalSupply();
+
+
+      expect(balance).to.equal(0);
+      expect(totalSupply).to.equal(0);
+    });
+
   });
 });
