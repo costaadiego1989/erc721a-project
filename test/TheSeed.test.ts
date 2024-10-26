@@ -103,5 +103,11 @@ describe("TheSeed", function () {
       expect(totalSupply).to.equal(0);
     });
 
+    it("Should NOT burn", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await expect(seed.burn(1)).to.revertedWithCustomError(seed, "ERC721NonexistentToken");
+    });
+
   });
 });
