@@ -139,6 +139,11 @@ describe("TheSeed", function () {
       expect(totalSupply).to.equal(1);
     });
 
+    it("Should has NOT URI metadata", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      expect(seed.tokenURI(1)).to.be.revertedWithCustomError(seed, "ERC721NonexistentToken").withArgs(1);
+    });
 
   });
 });
