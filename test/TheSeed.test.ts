@@ -65,5 +65,43 @@ describe("TheSeed", function () {
       expect(totalSupply).to.equal(0);
     });
 
+    it("Should burn (approve)", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      const instance = seed.connect(otherAccount);
+
+      await seed.approve(otherAccount.address, tokenId);
+
+      await instance.burn(tokenId);
+      const balance = await seed.balanceOf(owner.address);
+      const totalSupply = await seed.totalSupply();
+
+
+      expect(balance).to.equal(0);
+      expect(totalSupply).to.equal(0);
+    });
+
+    it("Should burn (approve for all)", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      const instance = seed.connect(otherAccount);
+
+      await seed.setApprovalForAll(otherAccount.address, true);
+
+      await instance.burn(tokenId);
+      const balance = await seed.balanceOf(owner.address);
+      const totalSupply = await seed.totalSupply();
+
+
+      expect(balance).to.equal(0);
+      expect(totalSupply).to.equal(0);
+    });
+
   });
 });
