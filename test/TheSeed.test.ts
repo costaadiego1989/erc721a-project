@@ -125,6 +125,20 @@ describe("TheSeed", function () {
       expect(totalSupply).to.equal(1);
     });
 
+    it("Should has URI metadata", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      const balance = await seed.balanceOf(owner.address);
+      const totalSupply = await seed.totalSupply();
+
+      expect(await seed.tokenURI(tokenId)).to.equal("meusite.com/0.json");
+      expect(balance).to.equal(1);
+      expect(totalSupply).to.equal(1);
+    });
+
 
   });
 });

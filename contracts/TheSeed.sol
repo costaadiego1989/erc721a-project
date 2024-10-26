@@ -22,7 +22,7 @@ contract TheSeed is ERC721, ERC721Enumerable, Ownable, ERC721URIStorage, ERC721B
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "meusite.com";
+        return "meusite.com/";
     }
 
     function tokenURI(uint256 tokenId)
