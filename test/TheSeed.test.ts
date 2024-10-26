@@ -11,16 +11,18 @@ describe("TheSeed", function () {
     const [owner, otherAccount] = await ethers.getSigners();
 
     // Deploy do contrato
-    const Seed = await ethers.getContractFactory("Seed");
-    const contract = await Seed.deploy();
-    await contract.waitForDeployment();
+    const Seed = await ethers.getContractFactory("TheSeed");
+    const seed = await Seed.deploy(owner);
 
-    return { contract, owner, otherAccount };
+    return { seed, owner, otherAccount };
   }
 
   describe("Deployment", function () {
-    it("Should deploy successfully", async function () {
-      const { contract, owner, otherAccount } = await loadFixture(deployFixture);
+
+    it("Should be name", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      expect(await (seed as any).name()).to.equal("The Seed");
       
     });
 
