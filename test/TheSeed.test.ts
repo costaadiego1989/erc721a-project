@@ -200,5 +200,32 @@ describe("TheSeed", function () {
         .withArgs(owner.address, otherAccount.address, tokenId);
     });
 
+    it("Should transfer approved)", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      await seed.approve(otherAccount.address, tokenId);
+      const instance = seed.connect(otherAccount);
+      
+      const approved = await seed.getApproved(tokenId);
+      await instance.transferFrom(owner.address, otherAccount.address, tokenId);
+      const balance = await seed.balanceOf(otherAccount.address);
+      const ownerOf = await seed.ownerOf(tokenId);
+
+      expect(balance)
+        .to
+        .equal(1);
+
+      expect(approved)
+        .to
+        .equal(otherAccount);
+
+      expect(ownerOf)
+        .to
+        .equal(otherAccount);
+    });
+
   });
 });
