@@ -70,18 +70,20 @@ describe("TheSeed", function () {
 
       await seed.mint();
       const tokenId = await seed.tokenByIndex(0);
-
       const instance = seed.connect(otherAccount);
-
+      
       await seed.approve(otherAccount.address, tokenId);
+      const approved = await seed.getApproved(tokenId);
 
       await instance.burn(tokenId);
+
       const balance = await seed.balanceOf(owner.address);
       const totalSupply = await seed.totalSupply();
 
-
       expect(balance).to.equal(0);
       expect(totalSupply).to.equal(0);
+      expect(approved).to.equal(otherAccount.address);
+
     });
 
     it("Should burn (approve for all)", async function () {
@@ -93,14 +95,16 @@ describe("TheSeed", function () {
       const instance = seed.connect(otherAccount);
 
       await seed.setApprovalForAll(otherAccount.address, true);
+      const approved = await seed.isApprovedForAll(owner.address, otherAccount.address);
 
       await instance.burn(tokenId);
       const balance = await seed.balanceOf(owner.address);
       const totalSupply = await seed.totalSupply();
 
-
       expect(balance).to.equal(0);
       expect(totalSupply).to.equal(0);
+      expect(approved).to.equal(true);
+
     });
 
     it("Should NOT burn", async function () {
@@ -225,6 +229,22 @@ describe("TheSeed", function () {
       expect(ownerOf)
         .to
         .equal(otherAccount);
+    });
+
+    
+    it("Should emit approval event", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      await seed.approve(otherAccount.address, tokenId);
+      const approved = await  seed.getApproved(tokenId);
+
+      expect(approved)
+        .to
+        .emit(seed, "Approval")
+        .withArgs(owner.address, otherAccount.address, tokenId);
     });
 
   });
