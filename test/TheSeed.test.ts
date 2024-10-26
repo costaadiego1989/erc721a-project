@@ -50,6 +50,15 @@ describe("TheSeed", function () {
       expect(totalSupply).to.equal(1);
     });
 
+    it("Should not mint if not an owner", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      const instance = seed.connect(otherAccount);
+
+      expect(instance.mint()).to.be.revertedWithCustomError(seed, "OwnableUnauthorizedAccount");
+
+    });
+
     it("Should burn", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
@@ -303,6 +312,14 @@ describe("TheSeed", function () {
         .to
         .emit(seed, "ApprovalForAll")
         .withArgs(owner.address, otherAccount.address, true);
+    });
+
+    it("Should support interfaces", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      expect(await seed.supportsInterface("0x80ac58cd"))
+        .to
+        .equal(true);
     });
 
 
