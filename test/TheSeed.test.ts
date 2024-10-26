@@ -290,6 +290,21 @@ describe("TheSeed", function () {
         .equal(otherAccount.address);
     });
 
+    it("Should emit approval for all event", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      await seed.setApprovalForAll(otherAccount.address, true);
+      const approved = await seed.isApprovedForAll(owner.address, otherAccount.address);
+
+      expect(approved)
+        .to
+        .emit(seed, "ApprovalForAll")
+        .withArgs(owner.address, otherAccount.address, true);
+    });
+
 
   });
 });
