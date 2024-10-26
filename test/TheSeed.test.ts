@@ -59,6 +59,13 @@ describe("TheSeed", function () {
 
     });
 
+    it("Should not mint if token does not exist", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await expect(seed.tokenByIndex(0)).to.be.revertedWithCustomError(seed, "ERC721OutOfBoundsIndex");
+
+    });
+
     it("Should burn", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
