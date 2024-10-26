@@ -109,5 +109,22 @@ describe("TheSeed", function () {
       await expect(seed.burn(1)).to.revertedWithCustomError(seed, "ERC721NonexistentToken");
     });
 
+    it("Should NOT burn (approve)", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+
+      const instance = seed.connect(otherAccount);
+
+      const balance = await seed.balanceOf(owner.address);
+      const totalSupply = await seed.totalSupply();
+
+      await expect(instance.burn(tokenId)).to.be.revertedWithCustomError(seed, "ERC721InsufficientApproval");
+      expect(balance).to.equal(1);
+      expect(totalSupply).to.equal(1);
+    });
+
+
   });
 });
