@@ -145,5 +145,24 @@ describe("TheSeed", function () {
       expect(seed.tokenURI(1)).to.be.revertedWithCustomError(seed, "ERC721NonexistentToken").withArgs(1);
     });
 
+    it("Should transfer", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+
+      const tokenId = await seed.tokenByIndex(0);
+      await seed.transferFrom(owner.address, otherAccount.address, tokenId);
+
+      const balanceFrom = await seed.balanceOf(owner.address);
+      const balanceTo = await seed.balanceOf(otherAccount.address);
+      const ownerOf = await seed.ownerOf(tokenId);
+      const ownerTokenId = await seed.tokenOfOwnerByIndex(otherAccount.address, tokenId);
+
+      expect(balanceFrom).to.equal(0);
+      expect(balanceTo).to.equal(1);
+      expect(tokenId).to.equal(ownerTokenId);
+      expect(ownerOf).to.equal(otherAccount.address);
+    });
+
   });
 });
