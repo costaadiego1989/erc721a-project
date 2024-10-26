@@ -164,13 +164,40 @@ describe("TheSeed", function () {
       expect(ownerOf).to.equal(otherAccount.address);
     });
 
-    it("Should emit transfer", async function () {
+    it("Should NOT transfer", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      await seed.mint();
+      const tokenId = await seed.tokenByIndex(0);
+      
+      const instance = seed.connect(otherAccount);
+
+      await expect(instance.transferFrom(otherAccount.address, owner.address, tokenId))
+        .to
+        .be
+        .revertedWithCustomError(seed, "ERC721InsufficientApproval");
+
+      const balanceFrom = await seed.balanceOf(owner.address);
+      const balanceTo = await seed.balanceOf(otherAccount.address);
+      const ownerOf = await seed.ownerOf(tokenId);
+      const ownerTokenId = await seed.tokenOfOwnerByIndex(owner.address, tokenId);
+
+      expect(balanceFrom).to.equal(1);
+      expect(balanceTo).to.equal(0);
+      expect(tokenId).to.equal(ownerTokenId);
+      expect(ownerOf).to.equal(owner.address);
+    });
+
+    it("Should emit transfer event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
       await seed.mint();
       const tokenId = await seed.tokenByIndex(0);
 
-      expect(await seed.transferFrom(owner.address, otherAccount.address, tokenId)).to.emit(seed, "Transfer").withArgs(owner.address, otherAccount.address, tokenId);
+      expect(await seed.transferFrom(owner.address, otherAccount.address, tokenId))
+        .to
+        .emit(seed, "Transfer")
+        .withArgs(owner.address, otherAccount.address, tokenId);
     });
 
   });
