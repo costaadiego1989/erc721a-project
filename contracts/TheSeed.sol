@@ -4,17 +4,17 @@ pragma solidity ^0.8.26;
 import "erc721a/contracts/ERC721A.sol";
 
 contract TheSeed is ERC721A {
-    uint256 private _nextTokenId;
     address payable private _owner;
 
-    constructor(address initialOwner)
-        ERC721("The Seed", "SEED")
+    constructor()
+        ERC721A("The Seed", "SEED")
+    {
         _owner = payable(msg.sender);
-    {}
+    }
 
-    function _mint(uint256 _quantity) public payable {
-        uint256 tokenId = _nextTokenId++;
-        _safeMint(msg.sender, _quantity);
+    function mint(uint256 _quantity) public payable {
+        require(msg.value >= 0.01 ether * _quantity, "Insuficient payment");
+        _mint(msg.sender, _quantity);
     }
 
     function _baseURI() internal pure override returns (string memory) {
@@ -32,15 +32,15 @@ contract TheSeed is ERC721A {
 
     function withdraw() external onlyOwner {
         uint256 _amount = address(this).balance;
-        (bool, success) = _owner.call{ value: _amount }("");
+        (bool success,) = _owner.call{ value: _amount }("");
         require(success == true, "Failed to withdraw");
     }
 
-    function burn(uint256 tokenId) public override {
-        super._burn(tokenId);
+    function burn(uint256 tokenId) public {
+        super._burn(tokenId, true);
     }
 
-    modifier onlyOwner internal {
+    modifier onlyOwner {
         require(_owner == msg.sender, "You does not have permission");
         _;
     }

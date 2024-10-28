@@ -36,7 +36,7 @@ describe("TheSeed", function () {
     it("Should mint", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
 
       const balance = await seed.balanceOf(owner.address);
       const tokenId = await seed.tokenByIndex(0);
@@ -69,7 +69,7 @@ describe("TheSeed", function () {
     it("Should burn", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       await seed.burn(tokenId);
@@ -84,7 +84,7 @@ describe("TheSeed", function () {
     it("Should burn (approve)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
       const instance = seed.connect(otherAccount);
       
@@ -105,7 +105,7 @@ describe("TheSeed", function () {
     it("Should burn (approve for all)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       const instance = seed.connect(otherAccount);
@@ -132,7 +132,7 @@ describe("TheSeed", function () {
     it("Should NOT burn (approve)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       const instance = seed.connect(otherAccount);
@@ -148,7 +148,7 @@ describe("TheSeed", function () {
     it("Should has URI metadata", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       const balance = await seed.balanceOf(owner.address);
@@ -168,7 +168,7 @@ describe("TheSeed", function () {
     it("Should transfer", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
 
       const tokenId = await seed.tokenByIndex(0);
       await seed.transferFrom(owner.address, otherAccount.address, tokenId);
@@ -187,7 +187,7 @@ describe("TheSeed", function () {
     it("Should NOT transfer", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
       
       const instance = seed.connect(otherAccount);
@@ -220,7 +220,7 @@ describe("TheSeed", function () {
     it("Should emit transfer event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       expect(await seed.transferFrom(owner.address, otherAccount.address, tokenId))
@@ -232,7 +232,7 @@ describe("TheSeed", function () {
     it("Should transfer approved)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       await seed.approve(otherAccount.address, tokenId);
@@ -259,7 +259,7 @@ describe("TheSeed", function () {
     it("Should emit approval event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       await seed.approve(otherAccount.address, tokenId);
@@ -274,7 +274,7 @@ describe("TheSeed", function () {
     it("Should clear approvals)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       await seed.approve(otherAccount.address, tokenId);
@@ -290,7 +290,7 @@ describe("TheSeed", function () {
     it("Should transfer approved for all)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       await seed.setApprovalForAll(otherAccount.address, true);
@@ -318,7 +318,7 @@ describe("TheSeed", function () {
     it("Should emit approval for all event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint();
+      await seed.mint(1);
       const tokenId = await seed.tokenByIndex(0);
 
       await seed.setApprovalForAll(otherAccount.address, true);
@@ -344,7 +344,7 @@ describe("TheSeed", function () {
       const initialBalance = await seed.balanceOf(owner.address);
       expect(initialBalance).to.equal(0);
 
-      await seed.mint();
+      await seed.mint(1);
 
       const finalBalance = await seed.balanceOf(owner.address);
       expect(finalBalance).to.equal(1);
