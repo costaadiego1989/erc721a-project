@@ -208,6 +208,15 @@ describe("TheSeed", function () {
       expect(ownerOf).to.equal(owner.address);
     });
 
+    it("Should NOT transfer if token does not exist", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      expect(seed.transferFrom(otherAccount.address, owner.address, 1))
+        .to
+        .be
+        .revertedWithCustomError(seed, "ERC721OutOfBoundsIndex");
+    });
+
     it("Should emit transfer event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
@@ -327,6 +336,19 @@ describe("TheSeed", function () {
       expect(await seed.supportsInterface("0x80ac58cd"))
         .to
         .equal(true);
+    });
+
+    it("Should be increase balance", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      const initialBalance = await seed.balanceOf(owner.address);
+      expect(initialBalance).to.equal(0);
+
+      await seed.mint();
+
+      const finalBalance = await seed.balanceOf(owner.address);
+      expect(finalBalance).to.equal(1);
+
     });
 
 

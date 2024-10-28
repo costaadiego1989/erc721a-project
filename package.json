@@ -1,17 +1,17 @@
 {
-  "name": "projeto-padrao-erc721",
+  "name": "projeto-padrao-erc721a",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx hardhat coverage"
   },
   "keywords": [],
-  "author": "",
+  "author": "Diego Costa",
   "license": "ISC",
   "description": "",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@openzeppelin/contracts": "^5.1.0",
+    "erc721a": "^4.3.0",
     "hardhat": "^2.22.15"
   }
 }
