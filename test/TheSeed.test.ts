@@ -12,7 +12,7 @@ describe("TheSeed", function () {
 
     // Deploy do contrato
     const Seed = await ethers.getContractFactory("TheSeed");
-    const seed = await Seed.deploy(owner);
+    const seed = await Seed.deploy();
 
     return { seed, owner, otherAccount };
   }
@@ -36,16 +36,14 @@ describe("TheSeed", function () {
     it("Should mint", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
 
       const balance = await seed.balanceOf(owner.address);
-      const tokenId = await seed.tokenByIndex(0);
+      const tokenId = 0;
       const ownerOf = await seed.ownerOf(tokenId);
-      const ownerTokenId = await seed.tokenOfOwnerByIndex(owner.address, tokenId);
       const totalSupply = await seed.totalSupply();
 
       expect(balance).to.equal(1);
-      expect(tokenId).to.equal(ownerTokenId);
       expect(ownerOf).to.equal(owner.address);
       expect(totalSupply).to.equal(1);
     });
@@ -55,22 +53,22 @@ describe("TheSeed", function () {
 
       const instance = seed.connect(otherAccount);
 
-      expect(instance.mint()).to.be.revertedWithCustomError(seed, "OwnableUnauthorizedAccount");
+      expect(instance.mint(1)).to.be.revertedWithCustomError(seed, "TransferCallerNotOwnerNorApproved");
 
     });
 
     it("Should not mint if token does not exist", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await expect(seed.tokenByIndex(0)).to.be.revertedWithCustomError(seed, "ERC721OutOfBoundsIndex");
+      await expect(seed.mint(0)).to.be.revertedWithCustomError(seed, "MintZeroQuantity");
 
     });
 
     it("Should burn", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       await seed.burn(tokenId);
       const balance = await seed.balanceOf(owner.address);
@@ -84,8 +82,8 @@ describe("TheSeed", function () {
     it("Should burn (approve)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
       const instance = seed.connect(otherAccount);
       
       await seed.approve(otherAccount.address, tokenId);
@@ -105,8 +103,8 @@ describe("TheSeed", function () {
     it("Should burn (approve for all)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       const instance = seed.connect(otherAccount);
 
@@ -126,21 +124,21 @@ describe("TheSeed", function () {
     it("Should NOT burn", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await expect(seed.burn(1)).to.revertedWithCustomError(seed, "ERC721NonexistentToken");
+      await expect(seed.burn(1)).to.revertedWithCustomError(seed, "OwnerQueryForNonexistentToken");
     });
 
     it("Should NOT burn (approve)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       const instance = seed.connect(otherAccount);
 
       const balance = await seed.balanceOf(owner.address);
       const totalSupply = await seed.totalSupply();
 
-      await expect(instance.burn(tokenId)).to.be.revertedWithCustomError(seed, "ERC721InsufficientApproval");
+      await expect(instance.burn(tokenId)).to.be.revertedWithCustomError(seed, "TransferCallerNotOwnerNorApproved");
       expect(balance).to.equal(1);
       expect(totalSupply).to.equal(1);
     });
@@ -148,8 +146,8 @@ describe("TheSeed", function () {
     it("Should has URI metadata", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       const balance = await seed.balanceOf(owner.address);
       const totalSupply = await seed.totalSupply();
@@ -162,49 +160,45 @@ describe("TheSeed", function () {
     it("Should has NOT URI metadata", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      expect(seed.tokenURI(1)).to.be.revertedWithCustomError(seed, "ERC721NonexistentToken").withArgs(1);
+      expect(seed.tokenURI(1)).to.be.revertedWithCustomError(seed, "URIQueryForNonexistentToken").withArgs(1);
     });
 
     it("Should transfer", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
 
-      const tokenId = await seed.tokenByIndex(0);
+      const tokenId = 0;
       await seed.transferFrom(owner.address, otherAccount.address, tokenId);
 
       const balanceFrom = await seed.balanceOf(owner.address);
       const balanceTo = await seed.balanceOf(otherAccount.address);
       const ownerOf = await seed.ownerOf(tokenId);
-      const ownerTokenId = await seed.tokenOfOwnerByIndex(otherAccount.address, tokenId);
 
       expect(balanceFrom).to.equal(0);
       expect(balanceTo).to.equal(1);
-      expect(tokenId).to.equal(ownerTokenId);
       expect(ownerOf).to.equal(otherAccount.address);
     });
 
     it("Should NOT transfer", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
       
       const instance = seed.connect(otherAccount);
 
       await expect(instance.transferFrom(otherAccount.address, owner.address, tokenId))
         .to
         .be
-        .revertedWithCustomError(seed, "ERC721InsufficientApproval");
+        .revertedWithCustomError(seed, "TransferFromIncorrectOwner");
 
       const balanceFrom = await seed.balanceOf(owner.address);
       const balanceTo = await seed.balanceOf(otherAccount.address);
       const ownerOf = await seed.ownerOf(tokenId);
-      const ownerTokenId = await seed.tokenOfOwnerByIndex(owner.address, tokenId);
 
       expect(balanceFrom).to.equal(1);
       expect(balanceTo).to.equal(0);
-      expect(tokenId).to.equal(ownerTokenId);
       expect(ownerOf).to.equal(owner.address);
     });
 
@@ -214,14 +208,14 @@ describe("TheSeed", function () {
       expect(seed.transferFrom(otherAccount.address, owner.address, 1))
         .to
         .be
-        .revertedWithCustomError(seed, "ERC721OutOfBoundsIndex");
+        .revertedWithCustomError(seed, "TransferCallerNotOwnerNorApproved");
     });
 
     it("Should emit transfer event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       expect(await seed.transferFrom(owner.address, otherAccount.address, tokenId))
         .to
@@ -232,8 +226,8 @@ describe("TheSeed", function () {
     it("Should transfer approved)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       await seed.approve(otherAccount.address, tokenId);
       const instance = seed.connect(otherAccount);
@@ -259,8 +253,8 @@ describe("TheSeed", function () {
     it("Should emit approval event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       await seed.approve(otherAccount.address, tokenId);
       const approved = await  seed.getApproved(tokenId);
@@ -274,8 +268,8 @@ describe("TheSeed", function () {
     it("Should clear approvals)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       await seed.approve(otherAccount.address, tokenId);
       await seed.transferFrom(owner.address, otherAccount.address, tokenId);
@@ -290,8 +284,8 @@ describe("TheSeed", function () {
     it("Should transfer approved for all)", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       await seed.setApprovalForAll(otherAccount.address, true);
       const approved = await seed.isApprovedForAll(owner.address, otherAccount.address);
@@ -318,8 +312,8 @@ describe("TheSeed", function () {
     it("Should emit approval for all event", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
-      await seed.mint(1);
-      const tokenId = await seed.tokenByIndex(0);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+      const tokenId = 0;
 
       await seed.setApprovalForAll(otherAccount.address, true);
       const approved = await seed.isApprovedForAll(owner.address, otherAccount.address);
@@ -344,7 +338,7 @@ describe("TheSeed", function () {
       const initialBalance = await seed.balanceOf(owner.address);
       expect(initialBalance).to.equal(0);
 
-      await seed.mint(1);
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
 
       const finalBalance = await seed.balanceOf(owner.address);
       expect(finalBalance).to.equal(1);
