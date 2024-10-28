@@ -345,6 +345,31 @@ describe("TheSeed", function () {
 
     });
 
+    it("Should withdraw", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      const ownerBalanceBefore = await ethers.provider.getBalance(owner);
+      const instance = seed.connect(otherAccount);
+
+      await instance.mint(1, { value: ethers.parseEther("0.01") });
+      await seed.withdraw();
+
+      const contractBalance = await ethers.provider.getBalance(seed);
+      const ownerBalanceAfter = await ethers.provider.getBalance(owner);
+
+      expect(contractBalance).to.equal(0);
+      expect(ownerBalanceAfter).to.gt(ownerBalanceBefore);
+    });
+
+    it("Should NOT withdraw", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      const instance = seed.connect(otherAccount);
+
+      await seed.mint(1, { value: ethers.parseEther("0.01") });
+
+      expect(instance.withdraw()).to.revertedWith("You does not have permission");
+    });
 
   });
 });
