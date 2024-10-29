@@ -48,6 +48,12 @@ describe("TheSeed", function () {
       expect(totalSupply).to.equal(1);
     });
 
+    it("Should NOT mint", async function () {
+      const { seed, owner, otherAccount } = await loadFixture(deployFixture);
+
+      expect(seed.mint(1)).to.revertedWith("Insuficient payment");
+    });
+
     it("Should not mint if not an owner", async function () {
       const { seed, owner, otherAccount } = await loadFixture(deployFixture);
 
