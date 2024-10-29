@@ -158,7 +158,7 @@ describe("TheSeed", function () {
       const balance = await seed.balanceOf(owner.address);
       const totalSupply = await seed.totalSupply();
 
-      expect(await seed.tokenURI(tokenId)).to.equal("meusite.com/0.json");
+      expect(await seed.tokenURI(tokenId)).to.equal("ipfs://QmYKg1HuJeh1xRFTHhuBpyikN4Lcc2raiFCJAAy3wJxSB7/0.json");
       expect(balance).to.equal(1);
       expect(totalSupply).to.equal(1);
     });

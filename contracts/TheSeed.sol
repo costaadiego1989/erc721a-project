@@ -18,7 +18,7 @@ contract TheSeed is ERC721A {
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://Qmccxpw4dbQWboTj9tzvRAj5tmHv4SKfKyGFHeEkUND83e/";
+        return "ipfs://QmYKg1HuJeh1xRFTHhuBpyikN4Lcc2raiFCJAAy3wJxSB7/";
     }
 
     function tokenURI(uint256 tokenId)
@@ -43,6 +43,10 @@ contract TheSeed is ERC721A {
     modifier onlyOwner {
         require(_owner == msg.sender, "You does not have permission");
         _;
+    }
+
+    function contractURI() public view returns (string memory) {
+        return "https://apricot-rainy-marsupial-636.mypinata.cloud/ipfs/Qmb1hNjjm6BG4mSStpSWbp2YoH4RqeQNUpH5MbnJDXa9gd";
     }
 
 }
