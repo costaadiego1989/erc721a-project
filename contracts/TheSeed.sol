@@ -18,7 +18,7 @@ contract TheSeed is ERC721A {
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "meusite.com/";
+        return "ipfs://Qmccxpw4dbQWboTj9tzvRAj5tmHv4SKfKyGFHeEkUND83e/";
     }
 
     function tokenURI(uint256 tokenId)

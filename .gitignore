@@ -1,5 +1,7 @@
 node_modules
 .env
+metadata
+images
 
 # Hardhat files
 /cache
