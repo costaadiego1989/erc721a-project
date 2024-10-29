@@ -5,7 +5,7 @@ import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 const TheSeed = buildModule("TheSeed", (m) => {
 
-  const theSeed = m.contract("TheSeed" { });
+  const theSeed = m.contract("TheSeed", [], {});
 
   return { theSeed };
 });
